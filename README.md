@@ -1,6 +1,6 @@
 # cran.stats
 
-`cran.stats` is a package that provides functions to explore and visualise *daily*, *monthly* or *yearly* package download stats from Rstudio cran mirror logs. It also implements an approach to calculate the number of downloads for a given package alone by identifying and subtracting the downloads due to it's dependent packages.
+`cran.stats` is a package that provides functions to explore and visualise *hourly*, *daily*, *weekly*, *monthly* or *yearly* package download stats from Rstudio cran mirror logs. It also implements an approach to calculate the number of downloads for a given package alone by identifying and subtracting the downloads due to it's dependent packages.
 
 # Installation
 
@@ -12,7 +12,7 @@ devtools::install_github("arunsrinivasan/cran.stats")
 
 # Usage
 
-There are three functions:
+There are three functions, to be used in the order shown below:
 
 ### read_logs
 
