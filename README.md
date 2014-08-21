@@ -1,6 +1,6 @@
 # cran.stats
 
-`cran.stats` is a package that provides functions to explore and visualise daily, monthly or yearly package download stats from Rstudio cran mirror logs. It also implements an approach to calculate the number of downloads for a given package alone by identifying and subtracting the downloads due to it's dependent packages.
+`cran.stats` is a package that provides functions to explore and visualise *daily*, *monthly* or *yearly* package download stats from Rstudio cran mirror logs. It also implements an approach to calculate the number of downloads for a given package alone by identifying and subtracting the downloads due to it's dependent packages.
 
 # Installation
 
@@ -58,7 +58,7 @@ stats_logs(dt, type="monthly", pacakges=c("data.table"),
           dependency=TRUE, duration = 30L)
 ```
 
-Have a look at `?stats_logs` for more info. Let's keep it the defaults as such and get the download stats for the month of July. Note that we've to set the `type` to `daily` as we'd like to get the number of downloads on each day.
+Have a look at `?stats_logs` for more info. Let's get the *daily* download stats for the month of July.
 
 ```R
 dt_s = stats_logs(dt, type="daily")
