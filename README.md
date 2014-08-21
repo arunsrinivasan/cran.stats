@@ -12,11 +12,9 @@ devtools::install_github("arunsrinivasan/cran.stats")
 
 # Usage
 
-There are three functions to be aware of:
+There are three functions:
 
 ### read_logs
-
-Here's the function definition:
 
 ```R
 read_logs(start, end, path="./", dir="cran-mirror", verbose=TRUE)
@@ -54,8 +52,6 @@ dt["data.table"]
 ```
 
 ### stats_logs
-
-Here's the function definition:
 
 ```R
 stats_logs(dt, type="monthly", pacakges=c("data.table"), 
@@ -103,8 +99,6 @@ dt_s = stats_logs(dt, type="daily")
 
 ### plot_logs
 
-Here's the function definition:
-
 ```R
 plot_logs(dt)
 ```
@@ -114,3 +108,5 @@ Let's now plot the stats. Note that it detects the presenceo f `dep_N` column an
 ```R
 plot_logs(dt_s)
 ```
+
+![Alt text]( "data.table daily download stats for July 2014")
