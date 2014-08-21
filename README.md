@@ -103,7 +103,7 @@ dt_s = stats_logs(dt, type="daily")
 plot_logs(dt)
 ```
 
-Let's now plot the stats. Note that it detects the presenceo f `dep_N` column and automatically draws two plots, first with just the *direct* downloads for the packages specified, and the next with the number of downloads just due to dependencies.
+Let's now plot it. Note that it detects the presence of `dep_N` column and automatically draws two plots, first with just the *direct* downloads for the packages specified, and the next with the number of downloads just due to dependencies.
 
 ```R
 plot_logs(dt_s)
