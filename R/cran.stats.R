@@ -170,7 +170,7 @@ monthly = function(x) { gsub("^(.*)-(.*)-(.*)$", "\\1-\\2", x, perl=TRUE) }
 daily   = function(x) { x }
 weekly  = function(x) {
     week = yday(as.IDate(x)-1L)%/%7L + 1L
-    paste(yearly(x), week, sep='-')
+    paste(yearly(x), sprintf("%02d", week), sep='-')
 }
 hourly  = function(x, y) {
     hour = gsub("^(.*):(.*):(.*)$", "\\1", y, perl=TRUE)
