@@ -109,4 +109,4 @@ Let's now plot the stats. Note that it detects the presenceo f `dep_N` column an
 plot_logs(dt_s)
 ```
 
-![Alt text](https://github.com/arunsrinivasan/cran.stats/blob/master/inst/examples/dt_july.png "data.table daily download stats for July 2014")
+![Alt text](/../master/inst/examples/dt_july.png?raw=true "data.table daily download stats for July 2014")
