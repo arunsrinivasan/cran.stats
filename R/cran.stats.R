@@ -209,12 +209,12 @@ dep_stats <- function(dt, packages, type, duration) {
         stop("'duration' is in seconds, can't be a negative value, expecting >= 0L")
 
     this = dt[packages][!is.na(date) & !is.na(time)][, key := key_(date, time, type)]
-    this[, date_time := as.integer(as.POSIXct(paste(date, time)))]
+    this[, date_time := as.integer(as.POSIXct(paste(date, time), tz="GMT"))]
     setkey(this, package, key)
     
     dep = dt[deps_(packages)][!is.na(date) & !is.na(time)]
     dep[, key := key_(date, time, type)]
-    dep[, date_time := as.integer(as.POSIXct(paste(date, time)))]
+    dep[, date_time := as.integer(as.POSIXct(paste(date, time), tz="GMT"))]
     setkey(dep, date_time)
     
     range_counts <- function(x, y) {
