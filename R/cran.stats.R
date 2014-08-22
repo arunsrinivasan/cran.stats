@@ -240,7 +240,7 @@ dep_stats <- function(dt, packages, type, duration) {
         y$package[idx]
     }
     
-    ans <- dep[, list(dep_pkg=range_counts(this[as.data.table(.BY)], .SD)), by=list(i.package, key)]
+    ans <- dep[, list(dep_pkg=range_counts(this[.BY], .SD)), by=list(i.package, key)]
     setnames(ans, "i.package", "package")
     setkey(ans, package, key)
     ans[, list(dep_N=.N), by=names(ans)]
