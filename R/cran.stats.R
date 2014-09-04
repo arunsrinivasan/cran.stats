@@ -261,10 +261,10 @@ dep_stats2 <- function(dt, packages, type, duration) {
         stop("'duration' is in seconds, can't be a negative value, expecting >= 0L")
 
     this = dt[packages][!is.na(date) & !is.na(time)][, key := key_(date, time, type)]
-    this[, c("minus30", "plus30") := { 
+    this[, c("minust", "plust") := { 
             tmp = as.POSIXct(paste(date, time), tz="GMT");
-            list(tmp-30L, tmp+30L)}]
-    setkey(this, package, key, country, ip_id, minus30, plus30)
+            list(tmp-duration, tmp+duration)}]
+    setkey(this, package, key, country, ip_id, minust, plust)
     
     dep = dt[deps_(packages)][!is.na(date) & !is.na(time)][, key := key_(date, time, type)]
     dep[, c("time1", "time2") := {
