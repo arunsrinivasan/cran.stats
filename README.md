@@ -63,36 +63,36 @@ Have a look at `?stats_logs` for more info. Let's get the *daily* download stats
 ```R
 dt_s = stats_logs(dt, type="daily")
 #        package        key tot_N dep_N
-#  1: data.table 2014-07-01   456   136
-#  2: data.table 2014-07-02   406    96
+#  1: data.table 2014-07-01   456   138
+#  2: data.table 2014-07-02   406   102
 #  3: data.table 2014-07-03   393    78
 #  4: data.table 2014-07-04   267    74
-#  5: data.table 2014-07-05   178    60
+#  5: data.table 2014-07-05   178    67
 #  6: data.table 2014-07-06   169    40
 #  7: data.table 2014-07-07   450   102
-#  8: data.table 2014-07-08   680   183
-#  9: data.table 2014-07-09   663   147
-# 10: data.table 2014-07-10   705   131
+#  8: data.table 2014-07-08   680   237
+#  9: data.table 2014-07-09   663   161
+# 10: data.table 2014-07-10   705   133
 # 11: data.table 2014-07-11   709   176
-# 12: data.table 2014-07-12   556    65
+# 12: data.table 2014-07-12   556    68
 # 13: data.table 2014-07-13   676    35
 # 14: data.table 2014-07-14   605   100
 # 15: data.table 2014-07-15   637    98
 # 16: data.table 2014-07-16   549   111
 # 17: data.table 2014-07-17   586    91
-# 18: data.table 2014-07-18   481   101
+# 18: data.table 2014-07-18   481   103
 # 19: data.table 2014-07-19   230    59
 # 20: data.table 2014-07-20   273    55
-# 21: data.table 2014-07-21   525   137
+# 21: data.table 2014-07-21   525   139
 # 22: data.table 2014-07-22   504    89
 # 23: data.table 2014-07-23   605   142
 # 24: data.table 2014-07-24   530   141
 # 25: data.table 2014-07-25   394   109
-# 26: data.table 2014-07-26   214    38
+# 26: data.table 2014-07-26   214    39
 # 27: data.table 2014-07-27   215    46
-# 28: data.table 2014-07-28   440   148
-# 29: data.table 2014-07-29   456   106
-# 30: data.table 2014-07-30   440   115
+# 28: data.table 2014-07-28   440   154
+# 29: data.table 2014-07-29   456   113
+# 30: data.table 2014-07-30   440   116
 # 31: data.table 2014-07-31   405    86
 #        package        key tot_N dep_N
 ```
