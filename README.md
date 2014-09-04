@@ -63,37 +63,37 @@ Have a look at `?stats_logs` for more info. Let's get the *daily* download stats
 ```R
 dt_s = stats_logs(dt, type="daily")
 #        package        key tot_N dep_N
-#  1: data.table 2014-07-01   456   138
-#  2: data.table 2014-07-02   406   102
-#  3: data.table 2014-07-03   393    78
-#  4: data.table 2014-07-04   267    74
-#  5: data.table 2014-07-05   178    67
-#  6: data.table 2014-07-06   169    40
-#  7: data.table 2014-07-07   450   102
-#  8: data.table 2014-07-08   680   237
-#  9: data.table 2014-07-09   663   161
-# 10: data.table 2014-07-10   705   133
-# 11: data.table 2014-07-11   709   176
-# 12: data.table 2014-07-12   556    68
-# 13: data.table 2014-07-13   676    35
-# 14: data.table 2014-07-14   605   100
-# 15: data.table 2014-07-15   637    98
-# 16: data.table 2014-07-16   549   111
-# 17: data.table 2014-07-17   586    91
-# 18: data.table 2014-07-18   481   103
-# 19: data.table 2014-07-19   230    59
-# 20: data.table 2014-07-20   273    55
-# 21: data.table 2014-07-21   525   139
-# 22: data.table 2014-07-22   504    89
-# 23: data.table 2014-07-23   605   142
-# 24: data.table 2014-07-24   530   141
-# 25: data.table 2014-07-25   394   109
-# 26: data.table 2014-07-26   214    39
-# 27: data.table 2014-07-27   215    46
-# 28: data.table 2014-07-28   440   154
-# 29: data.table 2014-07-29   456   113
-# 30: data.table 2014-07-30   440   116
-# 31: data.table 2014-07-31   405    86
+#  1: data.table 2014-07-01   456    94
+#  2: data.table 2014-07-02   406    75
+#  3: data.table 2014-07-03   393    59
+#  4: data.table 2014-07-04   267    50
+#  5: data.table 2014-07-05   178    46
+#  6: data.table 2014-07-06   169    32
+#  7: data.table 2014-07-07   450    73
+#  8: data.table 2014-07-08   680   120
+#  9: data.table 2014-07-09   663    97
+# 10: data.table 2014-07-10   705    82
+# 11: data.table 2014-07-11   709   116
+# 12: data.table 2014-07-12   556    44
+# 13: data.table 2014-07-13   676    28
+# 14: data.table 2014-07-14   605    77
+# 15: data.table 2014-07-15   637    67
+# 16: data.table 2014-07-16   549    92
+# 17: data.table 2014-07-17   586    68
+# 18: data.table 2014-07-18   481    74
+# 19: data.table 2014-07-19   230    42
+# 20: data.table 2014-07-20   273    38
+# 21: data.table 2014-07-21   525   105
+# 22: data.table 2014-07-22   504    67
+# 23: data.table 2014-07-23   605    90
+# 24: data.table 2014-07-24   530    89
+# 25: data.table 2014-07-25   394    70
+# 26: data.table 2014-07-26   214    26
+# 27: data.table 2014-07-27   215    32
+# 28: data.table 2014-07-28   440   108
+# 29: data.table 2014-07-29   456    87
+# 30: data.table 2014-07-30   440    81
+# 31: data.table 2014-07-31   405    71
 #        package        key tot_N dep_N
 ```
 
