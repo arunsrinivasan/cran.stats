@@ -54,7 +54,7 @@ dt["data.table"]
 ### stats_logs
 
 ```R
-stats_logs(dt, type="monthly", pacakges=c("data.table"), 
+stats_logs(dt, type="monthly", packages=c("data.table"), 
           dependency=TRUE, duration = 30L)
 ```
 
