@@ -272,7 +272,8 @@ dep_stats2 <- function(dt, packages, type, duration) {
             list(tmp, tmp)}]
     setkey(dep, i.package, key, country, ip_id, time1, time2)
 
-    ans = foverlaps(dep, this, type="within", nomatch=0L)[, .N, by=list(i.package, key, package)]
+    ans = foverlaps(dep, this, type="within", nomatch=0L)
+    ans = unique(ans, by=names(ans)[1:6])[, .N, by=list(i.package, key, package)]
     setnames(ans, c("i.package", "package", "N"), c("package", "dep_pkg", "dep_N"))
     return(ans)
 }
