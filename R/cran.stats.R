@@ -22,7 +22,7 @@ stats_logs <- function(dt, type="monthly", packages=c("data.table"), dependency=
     if (dependency) {
         if (!suppressMessages(require(devtools)))
             stop("'devtools' could not be loaded")
-        deps = dep_stats(dt, packages, type, duration)
+        deps = dep_stats2(dt, packages, type, duration)
         deps = deps[, list(dep_N=sum(dep_N)), by=c("package", "key")]
         setkey(deps, package, key)
     }
@@ -244,6 +244,37 @@ dep_stats <- function(dt, packages, type, duration) {
     setnames(ans, "i.package", "package")
     setkey(ans, package, key)
     ans[, list(dep_N=.N), by=names(ans)]
+}
+
+dep_stats2 <- function(dt, packages, type, duration) {
+
+    if (is.null(key(dt)) || key(dt)[1L] != "package")
+        stop("dt's first key column must be 'package'")
+    if (!is.character(packages)) stop("'packages' must be a character vector")
+    types = c("yearly", "monthly", "weekly", "daily", "hourly")
+    if (!is.character(type) || length(type) != 1L) 
+        stop("'type' must be a character vector of length 1")
+    if (!type %chin% types) 
+        stop(paste("'type' must be one of:", paste(types, collapse=","), sep=" "))
+    duration = suppressWarnings(as.integer(duration))
+    if (duration < 0L || is.na(duration)) 
+        stop("'duration' is in seconds, can't be a negative value, expecting >= 0L")
+
+    this = dt[packages][!is.na(date) & !is.na(time)][, key := key_(date, time, type)]
+    this[, c("minus30", "plus30") := { 
+            tmp = as.POSIXct(paste(date, time), tz="GMT");
+            list(tmp-30L, tmp+30L)}]
+    setkey(this, package, key, country, ip_id, minus30, plus30)
+    
+    dep = dt[deps_(packages)][!is.na(date) & !is.na(time)][, key := key_(date, time, type)]
+    dep[, c("time1", "time2") := {
+            tmp = as.POSIXct(paste(date, time), tz="GMT");
+            list(tmp, tmp)}]
+    setkey(dep, i.package, key, country, ip_id, time1, time2)
+
+    ans = foverlaps(dep, this, type="within", nomatch=0L)[, .N, by=list(i.package, key, package)]
+    setnames(ans, c("i.package", "package", "N"), c("package", "dep_pkg", "dep_N"))
+    return(ans)
 }
 
 pkg_stats <- function(dt, packages, type) {
