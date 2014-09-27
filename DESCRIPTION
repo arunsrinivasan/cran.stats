@@ -3,8 +3,8 @@ Version: 0.1
 Title: Package download stats from Rstudio CRAN mirror
 Author: A Srinivasan
 Maintainer: A Srinivasan <aragorn168b@gmail.com>
-Depends: R (>= 2.15.0)
-Imports: tools, methods, data.table (>= 1.9.3)
+Depends: R (>= 2.15.0), data.table (>= 1.9.3)
+Imports: tools, methods
 Suggests: ggplot2, gridExtra, devtools
 Description: A tool providing easy access to explore and visualise daily, monthly or yearly package download stats from Rstudio cran mirror logs, by correcting for downloads from dependent packages.
 License: GPL (>= 2)
