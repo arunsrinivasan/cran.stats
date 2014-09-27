@@ -1,3 +1,4 @@
+import(data.table)
 export(read_logs)
 export(stats_logs)
 export(plot_logs)
