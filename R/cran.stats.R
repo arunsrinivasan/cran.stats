@@ -186,7 +186,7 @@ key_ <- function(date, time, type) {
 }
 
 deps_ <- function(packages) {
-    dep_pkg = lapply(packages, revdep)
+    dep_pkg = lapply(packages, revdep, bioconductor=TRUE)
     dep_len = vapply(dep_pkg, length, 0L)
     package = rep(packages, dep_len)
     uses_it = unlist(dep_pkg, use.names=FALSE)
