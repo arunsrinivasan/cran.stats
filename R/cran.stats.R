@@ -61,7 +61,7 @@ plot_logs <- function(dt) {
         theme(axis.text.x = element_text(angle=45, hjust=1))
         
         pl = list(pl1, pl2)
-        pl = do.call(marrangeGrob, c(pl, list(nrow=2L, ncol=1L,  top=quote(NULL))))
+        pl = marrangeGrob(grobs = pl, nrow=2L, ncol=1L, top=NULL)
     } else {
         setnames(ans, "tot_N", "pkg_N")
         pl = ggplot(data = ans, aes(x=Period, y=pkg_N, fill = package)) + 
