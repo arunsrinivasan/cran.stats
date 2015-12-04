@@ -1,5 +1,5 @@
 ## exported functions
-read_logs <- function(start, end, path="./", dir="cran-mirror", verbose=TRUE) {
+read_logs <- function(start, end, path="./", dir="cran-mirror", verbose=TRUE, select=c("date", "time", "package", "country", "ip_id")) {
     
     if (class(start) != "Date") {
         warning("Coercing 'start' to Date class")
@@ -11,7 +11,7 @@ read_logs <- function(start, end, path="./", dir="cran-mirror", verbose=TRUE) {
     }
     urls = urls_(seq(start, end, by="days"))
     odir = file.path(path, dir)
-    read_logs_(urls, odir, verbose)
+    read_logs_(urls, odir, verbose, select = select)
 }
 
 stats_logs <- function(dt, type="monthly", packages=c("data.table"), dependency=TRUE, duration=30L) {
@@ -144,14 +144,13 @@ unzip_logs <- function(urls, path, rec=1L, verbose=TRUE) {
     invisible(NULL)
 }
 
-fread_logs <- function(urls, path, verbose=TRUE) {
+fread_logs <- function(urls, path, verbose=TRUE, select=c("date", "time", "package", "country", "ip_id")) {
     idx  = match_(urls, path, regex="\\.gz$", pattern="\\.csv$", reverse=TRUE)
     dest = file.path(path, list.files(path, pattern="\\.csv$")[idx])
     tot  = length(dest)
-    sel  = c("date", "time", "package", "country", "ip_id")
     ans  = lapply(seq_along(dest), function(i){
         if (verbose) verbose_("Fread(ing) logs   ", i, tot, basename(dest[i]))
-        fread(dest[i], select=sel)
+        fread(dest[i], select=select)
     })
     ans = rbindlist(ans)
     keycols = c("package", "date", "time")
@@ -159,10 +158,10 @@ fread_logs <- function(urls, path, verbose=TRUE) {
     setcolorder(ans, c(keycols, setdiff(names(ans), keycols)))
 }
 
-read_logs_ <- function(urls, odir, verbose) {
+read_logs_ <- function(urls, odir, verbose, select=c("date", "time", "package", "country", "ip_id")) {
     download_logs(urls, odir, verbose)
     unzip_logs(urls, odir, 1L, verbose)
-    fread_logs(urls, odir, verbose)
+    fread_logs(urls, odir, verbose, select = select)
 }
 
 yearly  = function(x) { gsub("^(.*)-(.*)-(.*)$", "\\1", x, perl=TRUE) }
