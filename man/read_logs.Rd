@@ -13,6 +13,7 @@ read_logs(start, end, path="./", dir="cran-mirror", verbose=TRUE)
   \item{path}{ Path excluding the directory to download logs to}
   \item{dir}{ Directory within \code{path} where the logs will be downloaded to }
   \item{verbose}{ \code{TRUE} provides informative messages to the console }
+  \item{select}{ character vector of column names to keep from the logs, by default \code{c("date", "time", "package", "country", "ip_id")}}
 }
 \details{
     \code{read_logs} creates a folder under the path \code{path/dir} and downloads the logs from the date \code{start} until \code{end} on to it. After downloading all the logs, they will be automatically replaced with corresponding unzipped versions. If an unzipped log already exists, then download of that log will be skipped. If a log that was downloaded was corrupted, it'll be deleted autmatically and will be attemped again for download+unzip. If it fails again, the download of that log will be skipped.
