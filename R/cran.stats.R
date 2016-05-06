@@ -1,7 +1,5 @@
 ## exported functions
-read_logs <- function(start=Sys.Date()-30L, end=Sys.Date(), path="./", 
-    dir="cran-mirror", verbose=TRUE, select=c("date", "time", "package", 
-        "country", "ip_id")) {
+read_logs <- function(start=Sys.Date()-30L, end=Sys.Date(), dir="cran-mirror", verbose=TRUE, select=c("date", "time", "package", "country", "ip_id")) {
 
     if (class(start) != "Date") {
         warning("Coercing 'start' to Date class")
@@ -11,12 +9,14 @@ read_logs <- function(start=Sys.Date()-30L, end=Sys.Date(), path="./",
         warning("Coercing 'end' to Date class")
         end = as.Date(end)
     }
-    urls = urls_(seq(start, end, by="days"))
-    odir = file.path(path, dir)
-    read_logs_(urls, odir, verbose, select=select)
+    urls = construct_urls(seq(start, end, by="days"))
+    download_logs(urls, dir, verbose=verbose)
+    unzip_logs(urls, dir, verbose=verbose)
+    fread_logs(urls, dir, verbose=verbose, select=select)
 }
 
-stats_logs <- function(dt, type="monthly", packages=c("data.table"), dependency=TRUE, duration=30L) {
+stats_logs <- function(dt, type="monthly", packages="data.table", 
+    dependency=TRUE, duration=30L) {
 
     dependency = as.logical(dependency)    
     if (is.na(dependency))
@@ -31,53 +31,60 @@ stats_logs <- function(dt, type="monthly", packages=c("data.table"), dependency=
     this = pkg_stats(dt, packages, type)
     
     # get final counts
-    if (dependency) ans = this[deps] else ans = this
+    ans = if (dependency) this[deps] else this
     ans
 }
 
 plot_logs <- function(dt) {
     ans = copy(dt)
-    if (!suppressMessages(require(ggplot2))) 
+    if (!requireNamespace(ggplot2))
         stop("'ggplot2' couldn't be loaded")
     title = "Stats for the given duration"
     setnames(ans, "key", "Period")
 
     if ("dep_N" %chin% names(ans)) {
-        if (!suppressMessages(require(gridExtra))) 
+        if (!requireNamespace(gridExtra))
             stop("'gridExtra' couldn't be loaded")
 
         ans[, pkg_N := tot_N - dep_N][, tot_N := NULL]
         
         pl1 = ggplot(data = ans, aes(x=Period, y=pkg_N, fill = package)) + 
-        geom_bar(stat = "identity", position="dodge") + 
-        theme_bw() + labs(title=paste(title, ": Direct downloads only")) + 
-        scale_fill_brewer(palette="Set1") + 
-        # scale_y_continuous(breaks = round(seq(0L, max(ans$pkg_N), length.out=5L))) + 
-        theme(axis.text.x = element_text(angle=45, hjust=1))
+                geom_bar(stat = "identity", position="dodge") + 
+                theme_bw() + 
+                labs(title=paste(title, ": Direct downloads only")) + 
+                scale_fill_brewer(palette="Set1") + 
+                # scale_y_continuous(breaks = round(seq(0L, max(ans$pkg_N), 
+                # length.out=5L))) + 
+                theme(axis.text.x = element_text(angle=45, hjust=1))
 
         pl2 = ggplot(data = ans, aes(x=Period, y=dep_N, fill = package)) + 
-        geom_bar(stat = "identity", position="dodge") + 
-        theme_bw() + labs(title=paste(title, ": Through dependencies only")) + 
-        scale_fill_brewer(palette="Set1") + 
-        # scale_y_continuous(breaks = round(seq(0L, max(ans$dep_N), length.out=5L))) + 
-        theme(axis.text.x = element_text(angle=45, hjust=1))
+                geom_bar(stat = "identity", position="dodge") + 
+                theme_bw() + 
+                labs(title=paste(title, ": Through dependencies only")) + 
+                scale_fill_brewer(palette="Set1") + 
+                # scale_y_continuous(breaks = round(seq(0L, max(ans$dep_N), 
+                # length.out=5L))) + 
+                theme(axis.text.x = element_text(angle=45, hjust=1))
         
         pl = list(pl1, pl2)
-        pl = marrangeGrob(grobs = pl, nrow=2L, ncol=1L, top=NULL)
+        pl = marrangeGrob(grobs=pl, nrow=2L, ncol=1L, top=NULL)
     } else {
         setnames(ans, "tot_N", "pkg_N")
-        pl = ggplot(data = ans, aes(x=Period, y=pkg_N, fill = package)) + 
-        geom_bar(stat = "identity", position="dodge") + 
-        theme_bw() + labs(title=paste(title, ": Direct + Dependencies")) + scale_fill_brewer(palette="Set1") + 
-        # scale_y_continuous(breaks = round(seq(0L, max(ans$pkg_N), length.out=5L))) + 
-        theme(axis.text.x = element_text(angle=45, hjust=1))
+        pl = ggplot(data=ans, aes(x=Period, y=pkg_N, fill=package)) + 
+               geom_bar(stat="identity", position="dodge") + 
+               theme_bw() + 
+               labs(title=paste(title, ": Direct + Dependencies")) + 
+               scale_fill_brewer(palette="Set1") + 
+               # scale_y_continuous(breaks = round(seq(0L, max(ans$pkg_N), 
+               # length.out=5L))) + 
+               theme(axis.text.x = element_text(angle=45, hjust=1))
     }
     pl
 }
 
 ## internal functions
-urls_ <- function(days) {
-    if (is.character(days)) days = as.Date(days)
+construct_urls <- function(days) {
+    if (is.character(days)) days=as.Date(days)
     paste('http://cran-logs.rstudio.com/', year(days), '/', days, '.csv.gz', sep="")
 }
 
@@ -100,14 +107,12 @@ verbose_ <- function(pre, i, tot, file) {
     NULL
 }
 
-download_ <- function(src, dest, ...) {
-    suppressWarnings(
-        download.file(url=src, destfile=dest, ...)
-    )
+download_file <- function(src, dest, ...) {
+    suppressWarnings(download.file(url=src, destfile=dest, ...))
 }
 
 download_logs <- function(urls, path, verbose=TRUE) {
-    dir.create(path, showWarnings = FALSE)
+    dir.create(path, showWarnings=FALSE)
     idx = !(match_(urls, path, regex="\\.gz$"))
     src  = urls[idx]
     dest = file.path(path, basename(src))
@@ -116,9 +121,9 @@ download_logs <- function(urls, path, verbose=TRUE) {
     for ( i in seq_along(src)) {
         if (verbose) verbose_("Fetching logs", i, tot, basename(src[i]))
         tryCatch({
-            download_(src[i], dest[i], quiet=TRUE)
-            ans[i] = TRUE
-        }, error = function(e) {
+            download_file(src[i], dest[i], quiet=TRUE)
+            ans[i]=TRUE
+        }, error=function(e) {
             warning(paste("Couldn't open url", src[i], sep=" "))
             system(paste("rm", dest[i]))
         })
@@ -136,7 +141,7 @@ unzip_logs <- function(urls, path, rec=1L, verbose=TRUE) {
         if (status) {
             # Unzipping failed. Try downloading one more time
             system(paste("rm", dest[i]))
-            this_url = urls_(gsub("\\..*$", "", basename(dest[i])))
+            this_url = construct_urls(gsub("\\..*$", "", basename(dest[i])))
             ans = download_logs(this_url, path, verbose=FALSE)
             if (ans && rec==1L) unzip_logs(this_url, path, rec+1L)
             else warning(paste("Recursion limit reached, 
@@ -146,11 +151,12 @@ unzip_logs <- function(urls, path, rec=1L, verbose=TRUE) {
     invisible(NULL)
 }
 
-fread_logs <- function(urls, path, verbose=TRUE, select=c("date", "time", "package", "country", "ip_id")) {
+fread_logs <- function(urls, path, verbose=TRUE, select=c("date", "time", 
+    "package", "country", "ip_id")) {
     idx  = match_(urls, path, regex="\\.gz$", pattern="\\.csv$", reverse=TRUE)
     dest = file.path(path, list.files(path, pattern="\\.csv$")[idx])
     tot  = length(dest)
-    ans  = lapply(seq_along(dest), function(i){
+    ans  = lapply(seq_along(dest), function(i) {
         if (verbose) verbose_("Fread(ing) logs   ", i, tot, basename(dest[i]))
         fread(dest[i], select=select)
     })
@@ -158,12 +164,6 @@ fread_logs <- function(urls, path, verbose=TRUE, select=c("date", "time", "packa
     keycols = c("package", "date", "time")
     setkeyv(ans, keycols)
     setcolorder(ans, c(keycols, setdiff(names(ans), keycols)))
-}
-
-read_logs_ <- function(urls, odir, verbose, select=c("date", "time", "package", "country", "ip_id")) {
-    download_logs(urls, odir, verbose)
-    unzip_logs(urls, odir, 1L, verbose)
-    fread_logs(urls, odir, verbose, select = select)
 }
 
 yearly  = function(x) { gsub("^(.*)-(.*)-(.*)$", "\\1", x, perl=TRUE) }
@@ -191,7 +191,7 @@ deps_ <- function(packages) {
     dep_len = vapply(dep_pkg, length, 0L)
     package = rep(packages, dep_len)
     uses_it = unlist(dep_pkg, use.names=FALSE)
-    dep_pkg = data.table(package = package, dependency = uses_it)
+    dep_pkg = data.table(package=package, dependency=uses_it)
     setkey(dep_pkg, dependency)
 }
 
@@ -222,11 +222,11 @@ dep_stats <- function(dt, packages, type, duration) {
         range1 = x$date_time - duration
         range2 = x$date_time + duration
         
-        index1 = y[J(range1), roll=-Inf, nomatch=NA, mult="first", which=TRUE]
-        index2 = y[J(range2), roll=+Inf, nomatch=NA, mult="last",  which=TRUE]
+        index1 = y[.(range1), roll=-Inf, nomatch=NA, mult="first", which=TRUE]
+        index2 = y[.(range2), roll=+Inf, nomatch=NA, mult="last",  which=TRUE]
         
-        start = pmin(index1,index2,na.rm=TRUE)
-        end   = pmax(index1,index2,na.rm=TRUE)
+        start = pmin(index1, index2, na.rm=TRUE)
+        end   = pmax(index1, index2, na.rm=TRUE)
         
         diff_xy <- function(date_time, i) {
             ii = start[i]:end[i]
@@ -234,17 +234,17 @@ dep_stats <- function(dt, packages, type, duration) {
             bb = y$date_time[ii]
             ii[abs(bb-aa) <= duration]
         }
-        ans = x[, list(yi=diff_xy(date_time, .I)), by=list(xi=seq_len(nrow(x)))]
+        ans = x[, .(yi=diff_xy(date_time, .I)), by=.(xi=seq_len(nrow(x)))]
         ans[, `:=`(x.ip = x$ip_id[xi], y.ip = y$ip_id[yi])]
         ans[, `:=`(x.cntry = x$country[xi], y.cntry = y$country[yi])]
         idx = unique(ans[x.ip == y.ip & x.cntry == y.cntry]$yi)
         y$package[idx]
     }
     
-    ans <- dep[, list(dep_pkg=range_counts(this[.BY], .SD)), by=list(i.package, key)]
+    ans <- dep[, .(dep_pkg=range_counts(this[.BY], .SD)), by=.(i.package, key)]
     setnames(ans, "i.package", "package")
     setkey(ans, package, key)
-    ans[, list(dep_N=.N), by=names(ans)]
+    ans[, .(dep_N=.N), by=names(ans)]
 }
 
 dep_stats2 <- function(dt, packages, type, duration) {
@@ -274,7 +274,7 @@ dep_stats2 <- function(dt, packages, type, duration) {
     setkey(dep, i.package, key, country, ip_id, time1, time2)
 
     ans = foverlaps(dep, this, type="within", nomatch=0L)
-    ans = unique(ans, by=names(ans)[1:6])[, .N, by=list(i.package, key, package)]
+    ans = unique(ans, by=names(ans)[1:6])[, .N, by=.(i.package, key, package)]
     setnames(ans, c("i.package", "package", "N"), c("package", "dep_pkg", "dep_N"))
     return(ans)
 }
@@ -291,7 +291,7 @@ pkg_stats <- function(dt, packages, type) {
         stop(paste("'type' must be one of:", paste(types, collapse=","), sep=" "))
 
     this = dt[packages][!is.na(date) & !is.na(time)][, key := key_(date, time, type)]
-    ans = this[, list(tot_N = .N), by=list(package, key)]
+    ans = this[, .(tot_N = .N), by=.(package, key)]
     setkey(ans, package, key)
 }
 
