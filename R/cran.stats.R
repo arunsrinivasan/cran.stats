@@ -16,7 +16,7 @@ read_logs <- function(start=Sys.Date()-30L, end=Sys.Date(), dir="cran-mirror", v
 }
 
 stats_logs <- function(dt, type="monthly", packages="data.table", 
-    dependency=TRUE, duration=30L) {
+    dependency=TRUE, duration=60L) {
 
     dependency = as.logical(dependency)    
     if (is.na(dependency))
