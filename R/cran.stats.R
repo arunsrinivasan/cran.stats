@@ -1,6 +1,8 @@
 ## exported functions
-read_logs <- function(start, end, path="./", dir="cran-mirror", verbose=TRUE, select=c("date", "time", "package", "country", "ip_id")) {
-    
+read_logs <- function(start=Sys.Date()-30L, end=Sys.Date(), path="./", 
+    dir="cran-mirror", verbose=TRUE, select=c("date", "time", "package", 
+        "country", "ip_id")) {
+
     if (class(start) != "Date") {
         warning("Coercing 'start' to Date class")
         start = as.Date(start)
@@ -11,7 +13,7 @@ read_logs <- function(start, end, path="./", dir="cran-mirror", verbose=TRUE, se
     }
     urls = urls_(seq(start, end, by="days"))
     odir = file.path(path, dir)
-    read_logs_(urls, odir, verbose, select = select)
+    read_logs_(urls, odir, verbose, select=select)
 }
 
 stats_logs <- function(dt, type="monthly", packages=c("data.table"), dependency=TRUE, duration=30L) {
