@@ -35,20 +35,46 @@ stats_logs <- function(dt, type="monthly", packages="data.table",
     ans
 }
 
-plot_logs <- function(dt) {
+plot_logs <- function(dt, type=c("ggplot2")) {
+    type = match.arg(type)
+    no_points = dt[, .N, by=package][, max(N)]
+    chart = if (no_points<=31L) "bar" else "line"
+    # if (type == "plotly") plotly_logs(dt, chart=chart)
+    # else ggplot2_logs(dt, chart=chart)
+    ggplot2_logs(dt, chart=chart)
+}
+
+# plotly_logs <- function(dt, chart=c("bar", "line")) {
+#     if (!requireNamespace("plotly"))
+#         stop("'plotly' couldn't be loaded")
+#     chart = match.arg(chart)
+#     if ("dep_N" %chin% names(dt)) {
+#         p1 = plot_ly(dt, x=key, y=tot_N-dep_N, type=chart, color=package)
+#         p1 = plotly::layout(p1, legend=list(x=1.0, y=0.5), title="bla1")
+#         p2 = plot_ly(dt, x=key, y=dep_N, type="bar", color=package, showlegend=FALSE)
+#         p2 = plotly::layout(p2, title="bla2")
+#         p = subplot(p1, p2, margin=0.1, nrows=2L)
+#         p = plotly::layout(p, xaxis=list(title=""), xaxis2=list(title="Duration"), yaxis=list(title=""), yaxis2=list(title="N"))
+#     } else {
+#         p = plot_ly(dt, x=key, y=pkg_N, type="bar", color=package)
+#         p = plotly::layout(p, title="Total downloads (direct + dependencies)", legend=list(x=1.0, y=0.5))
+#     }
+#     p
+# }
+
+ggplot2_logs <- function(dt, chart=c("bar", "line")) {
     ans = copy(dt)
-    if (!requireNamespace(ggplot2))
+    if (!require("ggplot2"))
         stop("'ggplot2' couldn't be loaded")
+    chart = match.arg(chart)
     title = "Stats for the given duration"
     setnames(ans, "key", "Period")
 
     if ("dep_N" %chin% names(ans)) {
-        if (!requireNamespace(gridExtra))
+        if (!require("gridExtra"))
             stop("'gridExtra' couldn't be loaded")
-
         ans[, pkg_N := tot_N - dep_N][, tot_N := NULL]
-        
-        pl1 = ggplot(data = ans, aes(x=Period, y=pkg_N, fill = package)) + 
+        pl1 = ggplot(data=ans, aes(x=Period, y=pkg_N, fill=package)) +
                 geom_bar(stat = "identity", position="dodge") + 
                 theme_bw() + 
                 labs(title=paste(title, ": Direct downloads only")) + 
@@ -56,8 +82,7 @@ plot_logs <- function(dt) {
                 # scale_y_continuous(breaks = round(seq(0L, max(ans$pkg_N), 
                 # length.out=5L))) + 
                 theme(axis.text.x = element_text(angle=45, hjust=1))
-
-        pl2 = ggplot(data = ans, aes(x=Period, y=dep_N, fill = package)) + 
+        pl2 = ggplot(data=ans, aes(x=Period, y=dep_N, fill=package)) +
                 geom_bar(stat = "identity", position="dodge") + 
                 theme_bw() + 
                 labs(title=paste(title, ": Through dependencies only")) + 
@@ -65,7 +90,6 @@ plot_logs <- function(dt) {
                 # scale_y_continuous(breaks = round(seq(0L, max(ans$dep_N), 
                 # length.out=5L))) + 
                 theme(axis.text.x = element_text(angle=45, hjust=1))
-        
         pl = list(pl1, pl2)
         pl = marrangeGrob(grobs=pl, nrow=2L, ncol=1L, top=NULL)
     } else {
@@ -113,12 +137,12 @@ download_file <- function(src, dest, ...) {
 
 download_logs <- function(urls, path, verbose=TRUE) {
     dir.create(path, showWarnings=FALSE)
-    idx = !(match_(urls, path, regex="\\.gz$"))
+    idx  = !(match_(urls, path, regex="\\.gz$"))
     src  = urls[idx]
     dest = file.path(path, basename(src))
     tot  = length(src)
     ans  = vector("logical", tot)
-    for ( i in seq_along(src)) {
+    for (i in seq_along(src)) {
         if (verbose) verbose_("Fetching logs", i, tot, basename(src[i]))
         tryCatch({
             download_file(src[i], dest[i], quiet=TRUE)
