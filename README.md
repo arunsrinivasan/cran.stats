@@ -27,7 +27,7 @@ As an example, let's download all the logs between July 01, 2014 and July 31, 20
 ```R
 dt = read_logs(start = as.Date("2014-07-01"), 
                end = as.Date("2014-07-31"), 
-               path = "./", dir="cran-mirror", 
+               dir="cran-mirror", 
                verbose = TRUE)
 
 dim(dt)
